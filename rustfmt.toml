@@ -1,0 +1,6 @@
+max_width = 160
+ideal_width = 140
+tab_spaces = 2
+single_line_if_else = true
+hard_tabs = true
+

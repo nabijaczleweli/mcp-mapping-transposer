@@ -1,0 +1,39 @@
+{
+	"build_systems":
+	[
+		{
+			"name": "Build mcp-mapping-transposer",
+			"shell_cmd": "cargo test --color always",
+			"syntax": "Packages/ANSIescape/ANSI.tmLanguage",
+			"target": "ansi_color_build",
+			"working_dir": "$project_path"
+		},
+		{
+			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
+			"name": "Anaconda Python Builder",
+			"selector": "source.python",
+			"shell_cmd": "\"python3.exe\" -u \"$file\""
+		}
+	],
+	"folders":
+	[
+		{
+			"follow_symlinks": true,
+			"name": "Source",
+			"path": "src"
+		},
+		{
+			"file_include_patterns":
+			[
+				"Cargo.*"
+			],
+			"folder_exclude_patterns":
+			[
+				"*"
+			],
+			"follow_symlinks": true,
+			"name": "Build scripts",
+			"path": "."
+		}
+	]
+}

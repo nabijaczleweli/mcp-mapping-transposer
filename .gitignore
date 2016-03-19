@@ -1,0 +1,11 @@
+*
+!.gitignore
+!.travis.yml
+!.format-cieck
+!LICENSE
+!README.md
+!rustfmt.toml
+!Cargo.toml
+!*.sublime-project
+!src
+!src/**

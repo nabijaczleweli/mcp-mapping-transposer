@@ -1,0 +1,19 @@
+language: rust
+rust:
+  - stable
+  - beta
+  - nightly
+
+deploy:
+  provider: releases
+  api_key:
+    secure: "JQkt5HmkBvdWfH3uu0nJWzYZqzYHoaJLWD5pIqZzS7AdgEwM+z2iUagaOH57hWUdXeeoJJthVG3+u5V4AgvhUr40diML/B+ChxgMbjdSZA0DxpL8v31kg2v80j1ITrohCug6+qbqfZWz0v9iYLAbhOTmJiBTxCYUELyk6iDkKpCzcD78gO/uYQTvJa8Ati/OzwBfLzaZMn7+zzpQ8saqeRUbOE8prHaJDyRWjTVDepsBBhkVaTiGllauXEPBPPhPgI0YzoBOEoGfst1AOVYFWW4pGWWKdrab39u7v8cN+3RMPr8G9KviQAlVb1OQIEYsCVSVLt9RCsHDuY8Rvxy+w1cYB8ATHiYWaS5IaOVu+UxnoMSj1WDq5nQwt3MgGFNXd0kybOdzdBNM+pqTOa8+6f9AxE+tTyXrRlD74TloG/3pjMn2cJjzy0PrTKZkNfDDsehOEUis57K+3SpWTDZmvm2KR+a/qTiRaXmnD6bcTY32gt+7W1Lo6spYcSJX0Viy9rCXE/Gjzo5hBRsbj3bXD9hAH+y39bO7tTrdZk3Atu+UhiX4qbHOO0jsb0qJM/G7JrHC5xmsnrWiBOvZbr3zovB/iE1qDy0R6W/1JL1+zdXjKpClRQSLUjOKDbrSXoRZWxbsA2TMXkyjN2sFz7LdVg5XsLPKxM4I3meIyzJJlTs="
+  file: target/release/mcp-mapping-transposer
+  skip_cleanup: true
+  on:
+    tags: true
+    condition: $TRAVIS_RUST_VERSION = stable
+
+before_deploy:
+  - cargo build --release
+  - strip --strip-all --remove-section=.comment --remove-section=.note target/release/mcp-mapping-transposer

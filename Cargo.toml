@@ -1,0 +1,7 @@
+[package]
+name = "mcp-mapping-transposer"
+description = "Translate between MCP mappings"
+readme = "README.md"
+license = "MIT"
+version = "0.1.0"
+authors = ["nabijaczleweli <nabijaczleweli@gmail.com>"]
