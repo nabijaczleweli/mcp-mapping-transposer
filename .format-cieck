@@ -1,3 +1,0 @@
-rustfmt --write-mode=checkstyle src/*.* | tee rustfmt.log | tail -n 2 | \
-	python -c 'import sys;import xml.dom.minidom as mdom;print(mdom.parseString(sys.stdin.read()).toprettyxml())'
-! grep -q error rustfmt.log
