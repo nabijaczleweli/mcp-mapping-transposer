@@ -1,7 +1,13 @@
+extern crate zip;
+extern crate curl;
+extern crate clap;
+
+mod options;
+
+use options::Options;
+
+
 fn main() {
-	if 1 > 2 {
-		println!("o");
-	} else {
-		println!("p");
-	}
+	let opts = Options::parse();
+	println!("{:?}", opts);
 }

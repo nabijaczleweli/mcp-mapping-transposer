@@ -5,3 +5,9 @@ readme = "README.md"
 license = "MIT"
 version = "0.1.0"
 authors = ["nabijaczleweli <nabijaczleweli@gmail.com>"]
+
+
+[dependencies]
+zip = "0.1"
+curl = "0.2"
+clap = "2.2"
