@@ -1,30 +1,38 @@
-use clap::App as Clapp;
-use std::env::home_dir;
+use clap::{App as Clapp, Arg as Clarg};
 use std::path::{Path, PathBuf};
+use std::env::home_dir;
+use std::str::FromStr;
+use regex::Regex;
+
+use mapping::MappingSpec;
 
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
 pub struct Options {
-	pub source_mapping: String,
-	pub destination_mapping: String,
+	pub source_mapping: MappingSpec,
+	pub destination_mapping: MappingSpec,
 	pub data_dir: PathBuf,
 }
 
 impl Options {
 	pub fn parse() -> Options {
-		static USAGE: &'static str = "<mapping-from>        'The mapping to translate from'
-		                              <mapping-to>          'The mapping to translate to'
-		                              --data-dir [data-dir] 'Directory to store data in, default: $HOME/.mcp-mapping-transposer/'";
+		static USAGE: &'static str = "--data-dir [data-dir] 'Directory to store data in, default: $HOME/.mcp-mapping-transposer/'";
 
 		let matches = Clapp::new("mcp-mapping-transposer").version(env!("CARGO_PKG_VERSION"))
 			                                                .author("nabijaczleweli <nabijaczleweli@gmail.com>")
 			                                                .about("Translate between MCP mappings")
 			                                                .args_from_usage(USAGE)
+			                                                .arg(Clarg::from_usage(
+			                                                      "<mapping-from> 'The mapping to translate from. Format: <MC_VER>-<stable|snapshot>_<ID>'"
+			                                                     ).validator(Options::mapping_validator))
+			                                                .arg(Clarg::from_usage(
+			                                                      "<mapping-to> 'The mapping to translate to. Format: <MC_VER>-<stable|snapshot>_<ID>'"
+			                                                     ).validator(Options::mapping_validator))
 			                                                .get_matches();
 
 		Options{
-			source_mapping: matches.value_of("mapping-from").unwrap().to_string(),
-			destination_mapping: matches.value_of("mapping-to").unwrap().to_string(),
+			source_mapping: MappingSpec::from_arg_value(matches.value_of("mapping-from").unwrap()),
+			destination_mapping: MappingSpec::from_arg_value(matches.value_of("mapping-to").unwrap()),
 			data_dir: match matches.value_of("data-dir") {
 			          	Some(data_dir) => Path::new(data_dir).to_path_buf(),
 			          	None           => {
@@ -33,6 +41,17 @@ impl Options {
 			          		hd
 			          	},
 			          },
+		}
+	}
+
+
+	fn mapping_validator(arg: String) -> Result<(), String> {
+		let validator_regex = Regex::from_str(r"([[:digit:]]\.[[:digit:]](?:\.[[:digit:]])?)-(stable|snapshot)_([[:digit:]]+)").unwrap();
+
+		if validator_regex.is_match(&*&arg) {
+			Ok(())
+		} else {
+			Err("Argument is not in the format '<MC_VER>-<stable|snapshot>_<ID>'".to_string())
 		}
 	}
 }
