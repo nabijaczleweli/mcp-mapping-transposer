@@ -9,12 +9,13 @@ mod mapping;
 mod workspace;
 
 use options::Options;
+use workspace::Workspace;
 
 
 fn main() {
 	let opts = Options::parse();
 
-	workspace::prepare(&opts.data_dir);
-	workspace::ensure_mapping_present(&opts.data_dir, &opts.source_mapping).unwrap();
-	workspace::ensure_mapping_present(&opts.data_dir, &opts.destination_mapping).unwrap();
+	let workspace = Workspace::prepare(&opts.data_dir);
+	workspace.ensure_mapping_present(&opts.source_mapping);
+	workspace.ensure_mapping_present(&opts.destination_mapping);
 }
