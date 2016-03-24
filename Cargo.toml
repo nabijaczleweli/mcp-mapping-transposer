@@ -11,3 +11,4 @@ authors = ["nabijaczleweli <nabijaczleweli@gmail.com>"]
 zip = "0.1"
 curl = "0.2"
 clap = "2.2"
+regex = "0.1"

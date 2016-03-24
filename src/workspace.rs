@@ -14,7 +14,7 @@ pub fn ensure_mapping_present<ToPath: AsRef<Path>>(ws_dir: &ToPath, mapping: &Ma
 	let file_path = ws_dir.as_ref().join(format!("{}.zip", mapping));
 
 	if !file_path.exists() {
-		// Download mapping
+		network::download_mapping(file_path.as_path(), mapping);
 	}
 
 	Ok(())

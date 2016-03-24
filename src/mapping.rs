@@ -1,5 +1,6 @@
 use regex::Regex;
 use std::str::FromStr;
+use std::fmt;
 use std::io;
 
 
@@ -11,7 +12,7 @@ pub struct MappingSpec {
 }
 
 impl MappingSpec {
-	fn from_arg_value(arg: &str) -> MappingSpec {
+	pub fn from_arg_value(arg: &str) -> MappingSpec {
 		let captures = Regex::from_str(r"([[:digit:]]\.[[:digit:]](?:\.[[:digit:]])?)-(stable|snapshot)_([[:digit:]]+)").unwrap().captures(arg).unwrap();
 
 		MappingSpec{
@@ -22,6 +23,12 @@ impl MappingSpec {
 	}
 }
 
+impl fmt::Display for MappingSpec {
+	fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+		write!(f, "mcp_{}-{}-{}", self.stability, self.mapping_id, self.minecraft_version)
+	}
+}
+
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
 pub enum MappingStability {
@@ -29,12 +36,12 @@ pub enum MappingStability {
 	Snapshot,
 }
 
-impl ToString for MappingStability {
-	fn to_string(&self) -> String {
-		match self {
+impl fmt::Display for MappingStability {
+	fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+		write!(f, "{}", match self {
 			&MappingStability::Stable   => "stable",
 			&MappingStability::Snapshot => "snapshot",
-		}.to_string()
+		})
 	}
 }
 
