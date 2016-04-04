@@ -1,7 +1,9 @@
+extern crate csv;
 extern crate zip;
 extern crate curl;
 extern crate clap;
 extern crate regex;
+extern crate bidir_map;
 
 mod options;
 mod network;

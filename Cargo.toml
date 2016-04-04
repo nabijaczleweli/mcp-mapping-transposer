@@ -8,7 +8,9 @@ authors = ["nabijaczleweli <nabijaczleweli@gmail.com>"]
 
 
 [dependencies]
+csv = "0.14"
 zip = "0.1"
 curl = "0.2"
 clap = "2.2"
 regex = "0.1"
+bidir-map = "0.1"
