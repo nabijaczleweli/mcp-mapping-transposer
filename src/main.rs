@@ -17,7 +17,9 @@ use workspace::Workspace;
 fn main() {
 	let opts = Options::parse();
 
-	let workspace = Workspace::prepare(&opts.data_dir);
+	let mut workspace = Workspace::prepare(&opts.data_dir);
 	workspace.ensure_mapping_present(&opts.source_mapping);
 	workspace.ensure_mapping_present(&opts.destination_mapping);
+	workspace.decypher_mapping(&opts.source_mapping);
+	workspace.decypher_mapping(&opts.destination_mapping);
 }

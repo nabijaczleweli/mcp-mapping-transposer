@@ -30,7 +30,7 @@ impl Mapping {
 			params_param_name: BidirMap::new(),
 		};
 
-		let mut zip = ZipArchive::new(File::create(mapping_path).unwrap()).unwrap();
+		let mut zip = ZipArchive::new(File::open(mapping_path).unwrap()).unwrap();
 		for file_idx in 0..zip.len() {
 			let mut file = zip.by_index(file_idx).unwrap();
 			let file_kind: CsvKind = str::parse(file.name()).unwrap();
