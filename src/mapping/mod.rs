@@ -38,7 +38,26 @@ impl Mapping {
 			let mut csv_reader = Reader::from_reader(file).has_headers(true).flexible(true);
 
 			match file_kind {
-				_ => (),
+				CsvKind::Fields => {
+					for row in csv_reader.records() {
+						let row = row.unwrap();
+						result.fields_seargename_name.insert(row[0].clone(), row[1].clone());
+						result.fields_seargename_desc.insert(row[0].clone(), row[3].clone());
+					}
+				},
+				CsvKind::Methods => {
+					for row in csv_reader.records() {
+						let row = row.unwrap();
+						result.methods_seargename_name.insert(row[0].clone(), row[1].clone());
+						result.methods_seargename_desc.insert(row[0].clone(), row[3].clone());
+					}
+				},
+				CsvKind::Params => {
+					for row in csv_reader.records() {
+						let row = row.unwrap();
+						result.params_param_name.insert(row[0].clone(), row[1].clone());
+					}
+				},
 			}
 		}
 
