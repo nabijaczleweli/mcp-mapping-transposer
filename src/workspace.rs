@@ -32,6 +32,7 @@ impl<'a> Workspace<'a> {
 	}
 
 	pub fn decypher_mapping(&mut self, mapping: &MappingSpec) {
+		println!("Loading {}...", mapping);
 		let mf_path = self.mapping_file_path(mapping);
 		self.mappings.insert(mapping.clone(), Mapping::parse(mf_path.as_path()));
 	}
