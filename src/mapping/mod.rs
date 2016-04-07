@@ -32,7 +32,7 @@ impl Mapping {
 
 		let mut zip = ZipArchive::new(File::open(mapping_path).unwrap()).unwrap();
 		for file_idx in 0..zip.len() {
-			let mut file = zip.by_index(file_idx).unwrap();
+			let file = zip.by_index(file_idx).unwrap();
 			let file_kind: CsvKind = str::parse(file.name()).unwrap();
 
 			let mut csv_reader = Reader::from_reader(file).has_headers(true).flexible(true);
