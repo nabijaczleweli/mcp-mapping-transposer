@@ -16,7 +16,10 @@ pub fn translate(wspc: &Workspace, src: &MappingSpec, dst: &MappingSpec) -> Resu
 		}
 
 		if !line.is_empty() {
-			println!("{}", wspc.lookup(src, dst, &line));
+			match wspc.lookup(src, dst, &line) {
+				Some(result) => println!("{}", result),
+				None => println!("Mapping not found from {}", line),
+			}
 		}
 	}
 	Ok(())
