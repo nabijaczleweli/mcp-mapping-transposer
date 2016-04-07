@@ -37,6 +37,44 @@ impl<'a> Workspace<'a> {
 		self.mappings.insert(mapping.clone(), Mapping::parse(mf_path.as_path()));
 	}
 
+	pub fn lookup(&self, in_m: &MappingSpec, to_m: &MappingSpec, what: &String) -> String {
+		let in_m = self.mappings.get(in_m).unwrap();
+		let to_m = self.mappings.get(to_m).unwrap();
+
+		if in_m.fields_seargename_name.contains_second_key(what) {
+			let seargename = in_m.fields_seargename_name.get_by_second(what).unwrap();
+			format!("field {} {} {}", seargename,
+			                    to_m.fields_seargename_name.get_by_first(seargename).unwrap(),
+				                  to_m.fields_seargename_desc.get_by_first(seargename).unwrap())
+		} else if in_m.fields_seargename_desc.contains_second_key(what) {
+			let seargename = in_m.fields_seargename_desc.get_by_second(what).unwrap();
+			format!("field {} {} {}", seargename,
+			                    to_m.fields_seargename_name.get_by_first(seargename).unwrap(),
+			                    to_m.fields_seargename_desc.get_by_first(seargename).unwrap())
+		} else if in_m.fields_seargename_name.contains_first_key(what) {
+			format!("field {} {} {}", what, to_m.fields_seargename_name.get_by_first(what).unwrap(), to_m.fields_seargename_desc.get_by_first(what).unwrap())
+		} else if in_m.methods_seargename_name.contains_second_key(what) {
+			let seargename = in_m.methods_seargename_name.get_by_second(what).unwrap();
+			format!("method {} {} {}", seargename,
+			                           to_m.methods_seargename_name.get_by_first(seargename).unwrap(),
+				                         to_m.methods_seargename_desc.get_by_first(seargename).unwrap())
+		} else if in_m.methods_seargename_desc.contains_second_key(what) {
+			let seargename = in_m.methods_seargename_desc.get_by_second(what).unwrap();
+			format!("method {} {} {}", seargename,
+			                           to_m.methods_seargename_name.get_by_first(seargename).unwrap(),
+			                           to_m.methods_seargename_desc.get_by_first(seargename).unwrap())
+		} else if in_m.methods_seargename_name.contains_first_key(what) {
+			format!("method {} {} {}", what, to_m.methods_seargename_name.get_by_first(what).unwrap(), to_m.methods_seargename_desc.get_by_first(what).unwrap())
+		} else if in_m.params_param_name.contains_second_key(what) {
+			let seargename = in_m.params_param_name.get_by_second(what).unwrap();
+			format!("param {} {}", seargename, to_m.params_param_name.get_by_first(seargename).unwrap())
+		} else if in_m.params_param_name.contains_first_key(what) {
+			format!("param {} {}", what, to_m.params_param_name.get_by_first(what).unwrap())
+		} else {
+			"NOTHING".to_string()
+		}
+	}
+
 
 	fn mapping_file_path(&self, mapping: &MappingSpec) -> PathBuf {
 		self.ws_dir.join(format!("{}.zip", mapping))

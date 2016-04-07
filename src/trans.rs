@@ -15,7 +15,9 @@ pub fn translate(wspc: &Workspace, src: &MappingSpec, dst: &MappingSpec) -> Resu
 			break;
 		}
 
-		//
+		if !line.is_empty() {
+			println!("{}", wspc.lookup(src, dst, &line));
+		}
 	}
 	Ok(())
 }
