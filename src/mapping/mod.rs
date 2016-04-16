@@ -1,4 +1,5 @@
 use bidir_map::BidirMap;
+use std::thread::{self, JoinHandle};
 use std::path::Path;
 use std::str::FromStr;
 use std::fs::File;
@@ -22,49 +23,80 @@ pub struct Mapping {
 
 impl Mapping {
 	pub fn parse(mapping_path: &Path) -> Mapping {
-		let mut result = Mapping{
-			fields_seargename_name: BidirMap::new(),
-			fields_seargename_desc: BidirMap::new(),
-			methods_seargename_name: BidirMap::new(),
-			methods_seargename_desc: BidirMap::new(),
-			params_param_name: BidirMap::new(),
-		};
+		let mut fields_handle: Option<JoinHandle<(BidirMap<String, String>, BidirMap<String, String>)>> = None;
+		let mut methods_handle: Option<JoinHandle<(BidirMap<String, String>, BidirMap<String, String>)>> = None;
+		let mut params_handle: Option<JoinHandle<BidirMap<String, String>>> = None;
 
 		let mut zip = ZipArchive::new(File::open(mapping_path).unwrap()).unwrap();
 		for file_idx in 0..zip.len() {
 			let file = zip.by_index(file_idx).unwrap();
 			let file_kind: CsvKind = str::parse(file.name()).unwrap();
 
-			let mut csv_reader = Reader::from_reader(file).has_headers(true).flexible(true);
-
 			match file_kind {
-				CsvKind::Fields => {
-					for row in csv_reader.records() {
-						let row = row.unwrap();
-						result.fields_seargename_name.insert(row[0].clone(), row[1].clone());
-						result.fields_seargename_desc.insert(row[0].clone(), row[3].clone());
-					}
-				},
-				CsvKind::Methods => {
-					for row in csv_reader.records() {
-						let row = row.unwrap();
-						result.methods_seargename_name.insert(row[0].clone(), row[1].clone());
-						result.methods_seargename_desc.insert(row[0].clone(), row[3].clone());
-					}
-				},
-				CsvKind::Params => {
-					for row in csv_reader.records() {
-						let row = row.unwrap();
-						result.params_param_name.insert(row[0].clone(), row[1].clone());
-					}
-				},
+				CsvKind::Fields => fields_handle = Some(spawn_double_reader(mapping_path, file_idx)),
+				CsvKind::Methods => methods_handle = Some(spawn_double_reader(mapping_path, file_idx)),
+				CsvKind::Params => params_handle = Some(spawn_single_reader(mapping_path, file_idx)),
 			}
 		}
 
-		result
+		let (fields_seargename_name, fields_seargename_desc) = match fields_handle {
+			Some(handle) => handle.join().unwrap(),
+			None         => (BidirMap::new(), BidirMap::new()),
+		};
+		let (methods_seargename_name, methods_seargename_desc) = match methods_handle {
+			Some(handle) => handle.join().unwrap(),
+			None         => (BidirMap::new(), BidirMap::new()),
+		};
+		let params_param_name = match params_handle {
+			Some(handle) => handle.join().unwrap(),
+			None         => BidirMap::new(),
+		};
+		Mapping{
+			fields_seargename_name: fields_seargename_name,
+			fields_seargename_desc: fields_seargename_desc,
+			methods_seargename_name: methods_seargename_name,
+			methods_seargename_desc: methods_seargename_desc,
+			params_param_name: params_param_name,
+		}
 	}
 }
 
+
+fn spawn_double_reader(path: &Path, file_idx: usize) -> JoinHandle<(BidirMap<String, String>, BidirMap<String, String>)> {
+	let file = File::open(path).unwrap();
+	thread::spawn(move || {
+		let mut zip = ZipArchive::new(file).unwrap();
+		let mut csv_reader = Reader::from_reader(zip.by_index(file_idx).unwrap()).has_headers(true).flexible(true);
+
+		let mut name = BidirMap::new();
+		let mut desc = BidirMap::new();
+
+		for row in csv_reader.records() {
+			let row = row.unwrap();
+			name.insert(row[0].clone(), row[1].clone());
+			desc.insert(row[0].clone(), row[3].clone());
+		}
+
+		(name, desc)
+	})
+}
+
+fn spawn_single_reader(path: &Path, file_idx: usize) -> JoinHandle<BidirMap<String, String>> {
+	let file = File::open(path).unwrap();
+	thread::spawn(move || {
+		let mut zip = ZipArchive::new(file).unwrap();
+		let mut csv_reader = Reader::from_reader(zip.by_index(file_idx).unwrap()).has_headers(true).flexible(true);
+
+		let mut name = BidirMap::new();
+
+		for row in csv_reader.records() {
+			let row = row.unwrap();
+			name.insert(row[0].clone(), row[1].clone());
+		}
+
+		name
+	})
+}
 
 enum CsvKind {
 	Fields,
