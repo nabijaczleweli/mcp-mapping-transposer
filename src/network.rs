@@ -19,7 +19,7 @@ pub fn download_to_file(destination_file: &Path, url: String) {
 
 
 fn percent_progress_handler(dltotal: usize, dlnow: usize, _: usize, _: usize) {
-	if dltotal != 0 && dltotal != 0 {
+	if dltotal != 0 && dlnow != 0 {
 		print!("\r{}%   ", ((dlnow as f64 / dltotal as f64) * 10000f64).round() / 100f64);
 	}
 }
