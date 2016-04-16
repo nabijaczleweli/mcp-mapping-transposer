@@ -20,12 +20,12 @@ pub enum MappingStability {
 
 impl MappingSpec {
     pub fn from_arg_value(arg: &str) -> MappingSpec {
-        let captures = Regex::from_str(r"([[:digit:]]\.[[:digit:]](?:\.[[:digit:]])?)-(stable|snapshot)_([[:digit:]]+)").unwrap().captures(arg).unwrap();
+        let captures = Regex::from_str(r"(stable|snapshot)-([[:digit:]]+)-([[:digit:]]\.[[:digit:]](?:\.[[:digit:]])?)").unwrap().captures(arg).unwrap();
 
         MappingSpec {
-            minecraft_version: captures.at(1).unwrap().to_string(),
-            stability: str::parse(captures.at(2).unwrap()).unwrap(),
-            mapping_id: str::parse(captures.at(3).unwrap()).unwrap(),
+            minecraft_version: captures.at(3).unwrap().to_string(),
+            stability: str::parse(captures.at(1).unwrap()).unwrap(),
+            mapping_id: str::parse(captures.at(2).unwrap()).unwrap(),
         }
     }
 }

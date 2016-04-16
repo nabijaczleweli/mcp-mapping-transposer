@@ -23,10 +23,10 @@ impl Options {
 			                                                .about("Translate between MCP mappings")
 			                                                .args_from_usage(USAGE)
 			                                                .arg(Clarg::from_usage(
-			                                                      "<mapping-from> 'The mapping to translate from. Format: <MC_VER>-<stable|snapshot>_<ID>'"
+			                                                      "<mapping-from> 'The mapping to translate from. Format: <stable|snapshot>-<ID>-<MC_VER>'"
 			                                                     ).validator(Options::mapping_validator))
 			                                                .arg(Clarg::from_usage(
-			                                                      "<mapping-to> 'The mapping to translate to. Format: <MC_VER>-<stable|snapshot>_<ID>'"
+			                                                      "<mapping-to> 'The mapping to translate to. Format: <stable|snapshot>-<ID>-<MC_VER>'"
 			                                                     ).validator(Options::mapping_validator))
 			                                                .get_matches();
 
@@ -46,12 +46,12 @@ impl Options {
 
 
 	fn mapping_validator(arg: String) -> Result<(), String> {
-		let validator_regex = Regex::from_str(r"([[:digit:]]\.[[:digit:]](?:\.[[:digit:]])?)-(stable|snapshot)_([[:digit:]]+)").unwrap();
+		let validator_regex = Regex::from_str(r"(stable|snapshot)-([[:digit:]]+)-([[:digit:]]\.[[:digit:]](?:\.[[:digit:]])?)").unwrap();
 
 		if validator_regex.is_match(&*&arg) {
 			Ok(())
 		} else {
-			Err("Argument is not in the format '<MC_VER>-<stable|snapshot>_<ID>'".to_string())
+			Err("Argument is not in the format '<stable|snapshot>-<ID>-<MC_VER>'".to_string())
 		}
 	}
 }
