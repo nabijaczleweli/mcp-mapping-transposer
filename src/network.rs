@@ -1,4 +1,4 @@
-use curl::http;
+use curl::easy::Easy;
 use std::path::Path;
 use std::io::Write;
 use std::fs::File;
@@ -13,13 +13,26 @@ pub fn download_mapping(destination_file: &Path, mapping: &MappingSpec) {
 }
 
 pub fn download_to_file(destination_file: &Path, url: String) {
-	File::create(destination_file).unwrap().write_all(http::handle().get(url).progress(percent_progress_handler).exec().unwrap().get_body()).unwrap();
-	println!("");
-}
+	let mut buf = Vec::new();
 
+	let mut ctx = Easy::new();
+	ctx.url(&url).unwrap();
+	{
+		let mut ctx = ctx.transfer();
+		ctx.progress_function(|dltotal, dlnow, _, _| {
+			if dltotal != 0f64 && dlnow != 0f64 {
+				print!("\r{}%   ", ((dlnow / dltotal) * 10000f64).round() / 100f64);
+			}
 
-fn percent_progress_handler(dltotal: usize, dlnow: usize, _: usize, _: usize) {
-	if dltotal != 0 && dlnow != 0 {
-		print!("\r{}%   ", ((dlnow as f64 / dltotal as f64) * 10000f64).round() / 100f64);
+			true
+		}).unwrap();
+		ctx.write_function(|data| {
+			buf.extend_from_slice(data);
+			Ok(data.len())
+		}).unwrap();
+		ctx.perform().unwrap();
 	}
+
+	File::create(destination_file).unwrap().write_all(&buf).unwrap();
+	println!("");
 }
